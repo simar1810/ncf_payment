@@ -1,20 +1,16 @@
 "use client";
 import { API, RAZORPAY_API_KEY } from "@/config";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function IosPayment({ params }) {
-  console.log("params of /payment/[...paymentParams] => ", params);
-
-  const router = useRouter()
+  // console.log("params of /payment/[...paymentParams] => ", params);
 
   const [amount = "", coachId, planType] = params.paymentParams;
-  console.log("amount => ", amount);
-  console.log("coachId => ", coachId);
-  console.log("planType => ", planType);
-  
+  // console.log("amount => ", amount);
+  // console.log("coachId => ", coachId);
+  // console.log("planType => ", planType);
 
   function loadScript(src) {
     return new Promise((resolve) => {
@@ -39,24 +35,18 @@ export default function IosPayment({ params }) {
     try {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
         orderResponse;
-      const response = await axios.post(
-        `${API}/app/addSubscriptionIos`,
-        {
-          coachId,
-          planType: parseInt(planType),
-          razorpay_order_id,
-          razorpay_payment_id,
-          razorpay_signature,
-          amount,
-        }
-      );
+      const response = await axios.post(`${API}/app/addSubscriptionIos`, {
+        coachId,
+        planType: parseInt(planType),
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        amount,
+      });
 
       console.log("response of verifying order api => ", response);
       if (response.status === 200) {
         toast.success("Payment Successful!");
-        setTimeout(() => {
-          router.back()
-        }, 2500)
       }
     } catch (err) {
       console.log("error in verifying payment api", err);
@@ -78,8 +68,8 @@ export default function IosPayment({ params }) {
       const response = await axios.post(`${API}/app/razorpay/createOrder`, {
         amount,
         note: {
-          AppId: "WellnessZ",
-          PlanName: planType === 1 ? "Monthly Plan" : "3 Month Offer Plan",
+          AppId: "NCF",
+          PlanName: parseInt(planType) === 1 ? "Monthly Plan" : "3 Month Offer Plan",
         },
       });
 
@@ -99,24 +89,24 @@ export default function IosPayment({ params }) {
 
         console.log("order => ", order);
         const options = {
-          image: "/White.png",
+          image: "/logo.svg",
           key: RAZORPAY_API_KEY,
           amount: amount.toString(),
           note: order.notes,
           currency: order.currency,
-          name: "WellnessZ",
-          description: "Payment for WellnessZ",
+          name: "NCF",
+          description: "Payment for NCF",
           order_id: order.id,
           handler: async function (orderResponse) {
             handleVerifyPayment(orderResponse, amount);
           },
           prefill: {
-            name: "WellnessZ User",
+            name: "NCF User",
             email: "abc@gmail.com",
             contact: "9988776655",
           },
           theme: {
-            color: "#7AC143",
+            color: "#E97A4A",
           },
           retry: false,
         };
