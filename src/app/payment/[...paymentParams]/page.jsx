@@ -1,16 +1,20 @@
 "use client";
 import { API, RAZORPAY_API_KEY } from "@/config";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function IosPayment({ params }) {
   console.log("params of /payment/[...paymentParams] => ", params);
 
+  const router = useRouter()
+
   const [amount = "", coachId, planType] = params.paymentParams;
   console.log("amount => ", amount);
   console.log("coachId => ", coachId);
   console.log("planType => ", planType);
+  
 
   function loadScript(src) {
     return new Promise((resolve) => {
@@ -50,6 +54,9 @@ export default function IosPayment({ params }) {
       console.log("response of verifying order api => ", response);
       if (response.status === 200) {
         toast.success("Payment Successful!");
+        setTimeout(() => {
+          router.back()
+        }, 2500)
       }
     } catch (err) {
       console.log("error in verifying payment api", err);
