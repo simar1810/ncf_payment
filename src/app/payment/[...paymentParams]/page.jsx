@@ -1,12 +1,14 @@
 "use client";
+import SuccessPaymentPopup from "@/components/popups/successPaymentPopup";
 import { API, RAZORPAY_API_KEY } from "@/config";
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function IosPayment({ params }) {
   // console.log("params of /payment/[...paymentParams] => ", params);
 
+  const [isSuccessPaymentModal, setIsSuccessPaymentModal] = useState(false);
   const [amount = "", coachId, planType] = params.paymentParams;
   // console.log("amount => ", amount);
   // console.log("coachId => ", coachId);
@@ -47,6 +49,7 @@ export default function IosPayment({ params }) {
       console.log("response of verifying order api => ", response);
       if (response.status === 200) {
         toast.success("Payment Successful!");
+        setIsSuccessPaymentModal(true)
       }
     } catch (err) {
       console.log("error in verifying payment api", err);
@@ -69,7 +72,8 @@ export default function IosPayment({ params }) {
         amount,
         note: {
           AppId: "NCF",
-          PlanName: parseInt(planType) === 1 ? "Monthly Plan" : "3 Month Offer Plan",
+          PlanName:
+            parseInt(planType) === 1 ? "Monthly Plan" : "3 Month Offer Plan",
         },
       });
 
@@ -132,5 +136,10 @@ export default function IosPayment({ params }) {
   useEffect(() => {
     displayRazorpay();
   }, [amount]);
-  return <></>;
+  return (
+    <SuccessPaymentPopup
+      isSuccessPaymentModal={isSuccessPaymentModal}
+      setIsSuccessPaymentModal={setIsSuccessPaymentModal}
+    />
+  );
 }
